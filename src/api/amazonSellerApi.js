@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-class AmazonSellerOrders {
-    constructor() {
-        this.marketplaceId = 'A2Q3Y263D00KWC';
-        this.baseUrl = 'https://sellingpartnerapi-na.amazon.com';
-        
-    }
-}
-=======
 const os = require('os');
 const axios = require('axios');
 const DateHandler = require('../utils/dateHandler');
@@ -60,4 +51,3 @@ class AmazonSellerOrders {
 }
 
 module.exports = AmazonSellerOrders;
->>>>>>> 98bbb09 (Trabalhando em ajustes finais da classe AmazonSellerAuth para que ela possa gerenciar e passar o token de acesso para as outras classes.)
