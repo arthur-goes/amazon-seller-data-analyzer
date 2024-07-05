@@ -1,19 +1,14 @@
 const os = require('os');
 const axios = require('axios');
 const DateHandler = require('../utils/dateHandler');
-const Logger = require('../utils/logger');
-
-const logger = new Logger(true);
-
 
 class AmazonSellerOrders {
     
     #accessToken;
 
     constructor(accessToken, logger) {
-        const amazonSellerAuth = new AmazonSellerAuth(logger);
         this.marketplaceId = 'A2Q3Y263D00KWC';
-        this.baseUrl = 'https://sellingpartnerapi-na.amazon.com';
+        this.baseUrl = 'https://sellingpartnerapi-na.amazon.com/orders/v0/orders';
         this.userAgent = `Express server on ${os.type()} - ${os.hostname()}`;
         this.#accessToken = accessToken;
         
@@ -21,7 +16,7 @@ class AmazonSellerOrders {
         this.headers = {
             'User-Agent': `${this.userAgent}`,
             'Accept': 'application/json',
-            'x-amz-access-token': this.accessToken(),
+            'x-amz-access-token': this.#accessToken,
         }
 
         this.options = {
@@ -34,18 +29,23 @@ class AmazonSellerOrders {
 
     async getOrders(date1, date2 = null) {
         const dateHandler = new DateHandler();
-        
-        const dates = [
-            dateHandler.dateStringToDate(date1),
-            dateHandler.dateStringToDate(date2)
-        ]
-        .sort((a,b) => a - b);
-        this.logger.log(`Datas em ordem crescente: ${dates[0]}, ${dates[1]}}`);
+        const now = new Date();
+        let queryParams = '';
+        const dateStrings = [date1, date2];
 
-        const body = null 
+        if (now.getTime() - dates[1].getTime() < 86400000 || !dates[1]) {
+            queryParams = `?CreatedAfter=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[0]))}&MarketplaceIds=${this.marketplaceId}`
+        } else {
+            queryParams = `?CreatedAfter=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[0]))}&CreatedBefore=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[1]))}&MarketplaceIds=${this.marketplaceId}`
+        }
+        const url = `${this.baseUrl}?CreatedAfter=2024-07-01${encodeURIComponent("T00:00:00-03:00")}&MarketplaceIds=${this.marketplaceId}`
 
-        //const response = await axios.get(this.baseUrl, this.options);
-        //this.logger.log(`Dados consulta pedidos: ${response.data}`)
+        try {
+            const response = await axios.get(url, this.options);
+            this.logger.log(`Dados consulta pedidos: ${JSON.stringify(response.data, null, 2)}`)
+        } catch (error) {
+            console.log(error);
+        }
         
     }
 }

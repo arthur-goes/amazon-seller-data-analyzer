@@ -11,7 +11,8 @@ class DateHandler{
     toAmazonIsoDateTime(date){
         const dateString = date.toLocaleDateString();
         const time = date.toLocaleTimeString();
-        const amazonIsoDateTime = `${dateString}T${time}-03:00`
+        const timeString = `T${time}-03:00`
+        const amazonIsoDateTime = `${dateString}${encodeURIComponent(timeString)}`
         return amazonIsoDateTime;
     }
 
@@ -19,6 +20,10 @@ class DateHandler{
         const date = new Date();
         const now = new Date(date.getTime()-300000);
         return this.toAmazonIsoDateTime(now);
+    }
+
+    handleSearchDateIntervall(dateArray) {
+        dateArray[0]
     }
 }
 

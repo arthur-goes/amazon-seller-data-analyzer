@@ -1,4 +1,5 @@
 const axios = require('axios');
+const os = require('os');
 
 class AmazonSellerAuth {
     
@@ -11,6 +12,8 @@ class AmazonSellerAuth {
         this.authUrl = 'https://api.amazon.com/auth/o2/token';
         this.tokenExpireTime = 0;
 
+        this.userAgent = `Express server on ${os.type()} - ${os.hostname()}`;
+
         this.logger = logger;
     }
 
@@ -20,7 +23,7 @@ class AmazonSellerAuth {
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'UserAgent': 'seller-manager v1.0.0 (Ubuntu 22.04.4 LTS)'
+            'UserAgent': this.userAgent
         }
 
         const body = `?grant_type=refresh_token&refresh_token=${encodeURIComponent(this.refreshToken)}&client_id=${encodeURIComponent(this.clientId)}&client_secret=${encodeURIComponent(this.clientSecret)}`;
@@ -41,10 +44,10 @@ class AmazonSellerAuth {
                 this.tokenExpireTime = now.getTime() + 3590000;
                 this.#accessToken = data.access_token;
                 this.logger.log(`Access token successfully obtained!`);
-                return this.accessToken;
+                return this.#accessToken;
             } else {
                 this.logger.log('Token still valid!')
-                return this.accessToken;
+                return this.#accessToken;
             }
         } catch (error) {
             console.log(error)
@@ -57,16 +60,19 @@ class AmazonSellerAuth {
             this.logger.log('Token expirado ou inexistente');
             return true;
         } else {
-            console.log('Token válido e irá expirar em ' + (this.tokenExpireTime - now.getTime()) / 1000 + "s");
+            this.logger.log('Token válido e irá expirar em ' + (this.tokenExpireTime - now.getTime()) / 1000 + "s");
             return false;
         }
     }
 
-    getAccesToken(){
-        if (this.#accessToken){
+    async getAccesToken(){
+        if (this.#accessToken) {
+            this.logger.log("Token armazenado ainda válido e sendo utilizado...")
             return this.#accessToken;
         } else {
-            throw new Error("Access Token hasn't been fetch yet.")
+            this.#accessToken = await this.fetchAccessToken();
+            return this.#accessToken;
+
         }
     }
 
