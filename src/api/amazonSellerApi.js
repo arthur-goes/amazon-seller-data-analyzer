@@ -31,9 +31,14 @@ class AmazonSellerOrders {
         const dateHandler = new DateHandler();
         const now = new Date();
         let queryParams = '';
-        const dateStrings = [date1, date2];
-
-        if (now.getTime() - dates[1].getTime() < 86400000 || !dates[1]) {
+        const datesString = [date1, date2];
+        
+        const dates = [
+            dateHandler.dateStringToDate(datesString[0]),
+            date2 ? dateHandler.dateStringToDate(datesString[1]) : now
+        ].sort((a,b) => a-b);
+        
+        if (now.getTime() - dates[1].getTime() < 86400000) {
             queryParams = `?CreatedAfter=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[0]))}&MarketplaceIds=${this.marketplaceId}`
         } else {
             queryParams = `?CreatedAfter=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[0]))}&CreatedBefore=${encodeURIComponent(dateHandler.toAmazonIsoDateTime(dates[1]))}&MarketplaceIds=${this.marketplaceId}`
@@ -42,7 +47,8 @@ class AmazonSellerOrders {
 
         try {
             const response = await axios.get(url, this.options);
-            this.logger.log(`Dados consulta pedidos: ${JSON.stringify(response.data, null, 2)}`)
+            //this.logger.log(`Dados consulta pedidos: ${JSON.stringify(response.data, null, 2)}`);
+            return response.data.payload;
         } catch (error) {
             console.log(error);
         }
