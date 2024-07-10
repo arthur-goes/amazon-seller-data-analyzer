@@ -30,7 +30,7 @@ class AmazonSellerOrders {
         
         const dates = [
             dateHandler.dateStringToDate(datesString[0], "00:00:00"),
-            date2 ? dateHandler.dateStringToDate(datesString[1], "23:59:59") : now
+            dateHandler.dateStringToDate(datesString[1], "23:59:59")
         ].sort((a,b) => a-b);
 
         queryParams = {
@@ -70,7 +70,7 @@ class AmazonSellerOrders {
 
     async getOrderItems(orderId) {
         const url = `${this.baseUrl}/${orderId}/orderItems`
-
+        console.log("Order Id: " + orderId);
         const options = {
             method: 'get',
             headers: this.headers,
@@ -78,11 +78,12 @@ class AmazonSellerOrders {
 
         try {
             const response = await axios.get(url, options);
+            console.log(response);
             //const orderItems = response.data.payload;
-            return response;
+            return response.data.payload;
         } catch (error){
             console.error(error);
-            return
+            return error;
         }
     }
 

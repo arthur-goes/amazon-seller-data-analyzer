@@ -40,7 +40,8 @@ const afnOrderSchema = new mongoose.Schema({
     PaymentMethodDetails: [{type: String, required: true}],
     IsGlobalExpressEnabled: {type: Boolean, required: true},
     LastUpdateDate: {type: String, required: true},
-    ShipmentServiceLevelCategory: {type: String, required: true}
+    ShipmentServiceLevelCategory: { type: String, required: true },
+    orderItems: [orderItemSchema]
 });
 
 const mfnOrderSchema = new mongoose.Schema({
@@ -83,7 +84,8 @@ const mfnOrderSchema = new mongoose.Schema({
         PaymentMethodDetails: [{type: String, required: true}],
         IsGlobalExpressEnabled: {type: Boolean, required: true},
         LastUpdateDate: {type: String, required: true},
-        ShipmentServiceLevelCategory: {type: String, required: true}
+        ShipmentServiceLevelCategory: { type: String, required: true },
+        orderItems: [orderItemSchema]
 })
 
 const orderItemSchema = new mongoose.Schema({

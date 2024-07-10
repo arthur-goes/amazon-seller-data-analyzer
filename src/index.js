@@ -14,7 +14,7 @@ const app = express();
 
 app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/amz-seller');
+//mongoose.connect('mongodb://127.0.0.1:27017/amz-seller');
 
 const logger = new Logger(true);
 const amazonSellerAuth = new AmazonSellerAuth(logger);
@@ -57,9 +57,14 @@ app.get("/orderItems", async (req, res) => {
 
     const accessToken = await amazonSellerAuth.getAccesToken();
     const amazonSellerOrders = new AmazonSellerOrders(accessToken, logger);
-    const orderItems = await amazonSellerOrders.getOrderItems("702-8012499-3847445");
-    res.json(orderItems);
-})
+    
+    try {
+        const orderItems = await amazonSellerOrders.getOrderItems("702-1777232-4748251");
+        res.status(200).json(orderItems);
+    } catch (error) {
+        res.status(400).json({ message: "Erro ao obter os itens do pedido." });
+    }
+    })
 
 const PORT = 3000;
 app.listen(PORT, () => console.log('Server is running on port ' + PORT));
