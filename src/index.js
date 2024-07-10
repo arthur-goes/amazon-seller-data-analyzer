@@ -3,8 +3,8 @@ const axios = require('axios');
 const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 
-const AmazonSellerAuth = require('./api/amazonSellerAuth');
-const AmazonSellerOrders = require('./api/amazonSellerApi');
+const AmazonSellerAuth = require('./seller-api/amazonSellerAuth');
+const AmazonSellerOrders = require('./seller-api/amazonSellerOrders');
 const DateHandler = require('./utils/dateHandler');
 const Logger = require('./utils/logger');
 
@@ -44,6 +44,21 @@ app.get("/orders", async (req, res) => {
     } else {
         res.status(400).json({message: "Verifique as datas enviadas."});
     }
+})
+
+app.get("/order", async (req, res) => {
+
+    const accessToken = await amazonSellerAuth.getAccesToken();
+    const amazonSellerOrders = new AmazonSellerOrders(accessToken, logger);
+    const order = await amazonSellerOrders.getOrder("701-1960338-7710667");
+})
+
+app.get("/orderItems", async (req, res) => {
+
+    const accessToken = await amazonSellerAuth.getAccesToken();
+    const amazonSellerOrders = new AmazonSellerOrders(accessToken, logger);
+    const orderItems = await amazonSellerOrders.getOrderItems("702-8012499-3847445");
+    res.json(orderItems);
 })
 
 const PORT = 3000;

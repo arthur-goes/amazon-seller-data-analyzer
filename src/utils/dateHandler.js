@@ -1,18 +1,18 @@
 class DateHandler{
-    dateStringToDate(dateString) {
+    dateStringToDate(dateString, time = "00:00:00") {
         const [day, month, year] = dateString.split("/").map(part => part.padStart(2,'0'));
         if (!day || !month || !year) {
             throw new Error('Data fornecida inválida.');
         }
-        const date = new Date(`${year}-${month}-${day}`);
-        return new Date(date.getTime()+(3*60*60*1000));
+        const date = new Date(`${year}-${month}-${day}T${time}-03:00`);
+        return date;
     }
 
     toAmazonIsoDateTime(date){
-        const dateString = date.toLocaleDateString();
+        const [day, month, year] = date.toLocaleDateString().split("/").map(part => part.padStart(2,'0'));
         const time = date.toLocaleTimeString();
-        const timeString = `T${time}-03:00`
-        const amazonIsoDateTime = `${dateString}${encodeURIComponent(timeString)}`
+        const timeString = `T${time}-03:00`;
+        const amazonIsoDateTime = `${year}-${month}-${day}${timeString}`;
         return amazonIsoDateTime;
     }
 
